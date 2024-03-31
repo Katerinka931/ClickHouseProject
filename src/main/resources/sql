@@ -1,0 +1,62 @@
+----------------------------------------------ИНИЦИАЛИЗАЦИЯ БАЗЫ И ТАБЛИЦ----------------------------------------------
+CREATE DATABASE sport;
+
+CREATE TABLE sport.sport (`name` String) ENGINE = MergeTree() ORDER BY name;
+CREATE TABLE sport.team (`name` String, `count` Int8, sport_name String) ENGINE = MergeTree() ORDER BY name;
+
+INSERT INTO sport.sport (*) VALUES ('soccer'), ('baseball'), ('volleyball');
+INSERT INTO sport.team (*) VALUES ('team1', 12, 'soccer'), ('team2', 5, 'baseball'), ('team3', 22, 'volleyball'),
+                                ('team4', 8, 'soccer'), ('team5', 19, 'baseball'), ('team6', 30, 'volleyball'),
+                                ('team7', 9, 'baseball'), ('team8', 25, 'volleyball'), ('team9', 28, 'soccer'),
+                                ('team10', 10, 'baseball'), ('team11', 21, 'volleyball');
+
+SELECT * FROM sport.sport;
+SELECT * FROM sport.team;
+
+
+--------------------------------------------СОЗДАНИЕ ТАБЛИЦ НА ДРУГИХ ДВИЖКАХ-------------------------------------------
+------------------------------------------------ReplacingMergeTree------------------------------------------------------
+CREATE TABLE replacingSport(
+    id Int32,
+    name String,
+    version UInt32
+) ENGINE=ReplacingMergeTree(version)
+ORDER BY id;
+
+
+INSERT INTO replacingSport (id, name, version) VALUES (1, 'soccer', 1);
+INSERT INTO replacingSport (id, name, version) VALUES (1, 'football', 2);
+INSERT INTO replacingSport (id, name, version) VALUES (2, 'sport1', 1);
+INSERT INTO replacingSport (id, name, version) VALUES (2, 'sport2', 2);
+INSERT INTO replacingSport (id, name, version) VALUES (2, 'sport3', 3);
+INSERT INTO replacingSport (id, name, version) VALUES (2, 'sport4', 4);
+
+------------------------------------------------CollapsingMergeTree-----------------------------------------------------
+
+CREATE TABLE collapsingSport
+(
+    id        Int32,
+    name      String,
+    sportsmen Int32,
+    sign      Int8
+) ENGINE = CollapsingMergeTree(sign)
+      ORDER BY id;
+
+
+INSERT INTO collapsingSport (id, name, sportsmen, sign)
+VALUES (1, 'soccer', 1, -1);
+
+INSERT INTO collapsingSport (id, name, sportsmen, sign)
+VALUES (1, 'football', 2, 1);
+
+INSERT INTO collapsingSport (id, name, sportsmen, sign)
+VALUES (1, 'sport1', 14, 1);
+
+INSERT INTO collapsingSport (id, name, sportsmen, sign)
+VALUES (2, 'sport2', 15, -1);
+
+INSERT INTO collapsingSport (id, name, sportsmen, sign)
+VALUES (2, 'sport3', 23, 1);
+
+INSERT INTO collapsingSport (id, name, sportsmen, sign)
+VALUES (2, 'sport4', 25, 1);
